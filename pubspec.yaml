@@ -33,6 +33,7 @@ dependencies:
     sdk: flutter
   just_audio: any # substitute version number
   just_audio_background: any # substitute version number
+  flutter_launcher_icons: ^0.14.3
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
@@ -52,6 +53,14 @@ flutter:
     - assets/audio/
     - assets/audio/white-noise.mp3
     - assets/audio/waves.mp3
+    - assets/images/
+    - assets/images/noise.png
+    - assets/images/waves.png
+    - assets/images/sounds_app_icon.png
 
 target_platforms:
   - android
+
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/images/sounds_app_icon.png"
