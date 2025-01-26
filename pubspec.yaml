@@ -49,15 +49,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    # Songs
     - assets/audio/pjesme/
-    # Lullaby
     - assets/audio/lullaby/
-    # Noise
     - assets/audio/noise/
-    # Other assets
     - assets/images/
-    - assets/icons/
     - assets/app/
 
 target_platforms:

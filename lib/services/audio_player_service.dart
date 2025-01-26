@@ -65,8 +65,17 @@ class AudioPlayerService {
     }
   }
 
-  Future<void> loadPlaylist(List<AudioTrack> tracks,
-      {bool loop = false}) async {
+  Future<void> setLoopMode(bool loop) async {
+    try {
+      await _audioPlayer.setLoopMode(loop ? LoopMode.all : LoopMode.off);
+      debugPrint('Loop mode set to: ${loop ? 'all' : 'off'}');
+    } catch (e, st) {
+      debugPrint('Error setting loop mode: $e');
+      debugPrint('Stack trace: $st');
+    }
+  }
+
+  Future<void> loadPlaylist(List<AudioTrack> tracks) async {
     try {
       debugPrint('Loading playlist with ${tracks.length} tracks');
       await _playlist.clear();
@@ -84,7 +93,6 @@ class AudioPlayerService {
         await _initializePlayer();
       }
 
-      await _audioPlayer.setLoopMode(loop ? LoopMode.all : LoopMode.off);
       await _audioPlayer.seek(Duration.zero, index: 0);
       await _audioPlayer.play();
       debugPrint('Playlist loaded and playing');

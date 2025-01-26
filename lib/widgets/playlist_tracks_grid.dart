@@ -3,18 +3,12 @@ import '../models/audio_track.dart';
 
 class PlaylistTracksGrid extends StatelessWidget {
   final List<AudioTrack> tracks;
-  final Function(int) onPlayPressed;
   final Function(int) onRemoveFromPlaylist;
-  final bool isLooping;
-  final Function() onLoopToggle;
 
   const PlaylistTracksGrid({
     super.key,
     required this.tracks,
-    required this.onPlayPressed,
     required this.onRemoveFromPlaylist,
-    required this.isLooping,
-    required this.onLoopToggle,
   });
 
   @override
@@ -33,27 +27,6 @@ class PlaylistTracksGrid extends StatelessWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                'Loop Playlist',
-                style: TextStyle(
-                  color: Colors.orange.shade800,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Switch(
-                value: isLooping,
-                onChanged: (_) => onLoopToggle(),
-                activeColor: Colors.orange.shade800,
-              ),
-            ],
-          ),
-        ),
         Expanded(
           child: ListView.builder(
             itemCount: tracks.length,
@@ -71,13 +44,6 @@ class PlaylistTracksGrid extends StatelessWidget {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        icon: Icon(
-                          track.isPlaying ? Icons.stop : Icons.play_arrow,
-                          color: Colors.orange.shade800,
-                        ),
-                        onPressed: () => onPlayPressed(index),
-                      ),
                       IconButton(
                         icon: const Icon(Icons.remove_circle_outline),
                         color: Colors.red,

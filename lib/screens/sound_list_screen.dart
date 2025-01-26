@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import '../services/audio_player_service.dart';
 import '../models/audio_track.dart';
 import '../widgets/gradient_background.dart';
-import '../widgets/sound_title.dart';
 import '../widgets/noise_tracks_grid.dart';
 import '../widgets/lullaby_tracks_grid.dart';
 import '../widgets/song_tracks_grid.dart';
 import '../widgets/playlist_tracks_grid.dart';
+import '../widgets/playback_controls_widget.dart';
+import '../repositories/track_repository.dart';
 
 class SoundListScreen extends StatefulWidget {
   const SoundListScreen({super.key});
@@ -17,91 +18,22 @@ class SoundListScreen extends StatefulWidget {
 
 class _SoundListScreenState extends State<SoundListScreen> {
   final AudioPlayerService _audioPlayerService = AudioPlayerService();
+  late final TrackRepository _trackRepository;
   late final List<AudioTrack> noiseTracks;
   late final List<AudioTrack> lullabyTracks;
   late final List<AudioTrack> songTracks;
   final List<AudioTrack> playlistTracks = [];
   bool isPlaylistLooping = false;
+  bool isPlaylistVisible = false;
 
   @override
   void initState() {
     super.initState();
     _setupAudioPlayerListener();
-    noiseTracks = [
-      AudioTrack(
-        title: 'White Noise',
-        assetPath: 'assets/audio/noise/white-noise.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Waves',
-        assetPath: 'assets/audio/noise/waves-noise.mp3',
-        audioService: _audioPlayerService,
-      ),
-    ];
-
-    lullabyTracks = [
-      AudioTrack(
-        title: 'Calm Lullaby',
-        assetPath: 'assets/audio/lullaby/calm-and-focused-lull.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Mozart Lullaby',
-        assetPath: 'assets/audio/lullaby/mozart-brahms-lull.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Mozart Lullaby Second',
-        assetPath: 'assets/audio/lullaby/mozart-brahms-sec-lull.mp3',
-        audioService: _audioPlayerService,
-      ),
-    ];
-
-    songTracks = [
-      AudioTrack(
-        title: 'Cujem Te',
-        assetPath: 'assets/audio/pjesme/cujem-te meri-jaman.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Cuvajmo Boje Vode',
-        assetPath: 'assets/audio/pjesme/cuvajmo-boje-vode-jelena-radan.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Jedan Djecak',
-        assetPath: 'assets/audio/pjesme/jedan-djecak-anita-valo.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Kuca Luda',
-        assetPath: 'assets/audio/pjesme/kuca-luda.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Leti Poput Petra Pana',
-        assetPath: 'assets/audio/pjesme/leti-poput-petra-pana-aljosa-seric.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Mjesto Za Mene',
-        assetPath:
-            'assets/audio/pjesme/mjesto-za-mene-goran-boskovic-meri-jaman-jelena-radan.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Place For Us',
-        assetPath:
-            'assets/audio/pjesme/place-for-us-goran-boskovic-meri-jaman-jelena-radan.mp3',
-        audioService: _audioPlayerService,
-      ),
-      AudioTrack(
-        title: 'Rejna',
-        assetPath: 'assets/audio/pjesme/rejna-viktorija-novosel.mp3',
-        audioService: _audioPlayerService,
-      ),
-    ];
+    _trackRepository = TrackRepository(_audioPlayerService);
+    noiseTracks = _trackRepository.getNoiseTracks();
+    lullabyTracks = _trackRepository.getLullabyTracks();
+    songTracks = _trackRepository.getSongTracks();
   }
 
   void _setupAudioPlayerListener() {
@@ -153,33 +85,42 @@ class _SoundListScreenState extends State<SoundListScreen> {
     });
   }
 
-  void _togglePlaylistLoop() {
+  void _togglePlaylistLoop() async {
     setState(() {
       isPlaylistLooping = !isPlaylistLooping;
     });
+    await _audioPlayerService.setLoopMode(isPlaylistLooping);
   }
 
-  Future<void> _playPlaylist(int startIndex) async {
+  Future<void> _playPlaylist() async {
     if (playlistTracks.isEmpty) return;
 
     await _stopCurrentAudio();
-    await _audioPlayerService.loadPlaylist(
-      playlistTracks.sublist(startIndex)
-        ..addAll(playlistTracks.sublist(0, startIndex)),
-      loop: isPlaylistLooping,
-    );
-    setState(() {
-      for (var track in [...noiseTracks, ...lullabyTracks, ...songTracks]) {
-        track.isPlaying = false;
-      }
-      playlistTracks[startIndex].isPlaying = true;
-    });
+    await _audioPlayerService.loadPlaylist(playlistTracks);
+    await _audioPlayerService.setLoopMode(isPlaylistLooping);
+  }
+
+  Future<void> _nextTrack() async {
+    if (playlistTracks.isEmpty) return;
+    await _audioPlayerService.audioPlayer.seekToNext();
+  }
+
+  Future<void> _previousTrack() async {
+    if (playlistTracks.isEmpty) return;
+    await _audioPlayerService.audioPlayer.seekToPrevious();
+  }
+
+  String? _getCurrentTrackTitle() {
+    if (playlistTracks.isEmpty) return null;
+    final currentIndex = _audioPlayerService.audioPlayer.currentIndex;
+    if (currentIndex == null) return null;
+    return playlistTracks[currentIndex].title;
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         body: GradientBackground(
           child: SafeArea(
@@ -193,119 +134,133 @@ class _SoundListScreenState extends State<SoundListScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SoundTitle(),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TabBar(
-                          indicatorColor: Colors.orange.shade800,
-                          labelColor: Colors.orange.shade800,
-                          unselectedLabelColor: Colors.grey,
-                          tabs: [
-                            Tab(
-                              icon: Image.asset('assets/images/noise.png',
-                                  width: 24),
-                              text: 'Noise',
-                            ),
-                            Tab(
-                              icon: Image.asset('assets/images/lullaby.png',
-                                  width: 24),
-                              text: 'Lullaby',
-                            ),
-                            Tab(
-                              icon: Image.asset('assets/images/songs.png',
-                                  width: 24),
-                              text: 'Songs',
-                            ),
-                            const Tab(
-                              icon: Icon(Icons.playlist_play),
-                              text: 'Playlist',
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          _audioPlayerService.isPlaylistMode
-                              ? Icons.playlist_play
-                              : Icons.music_note,
-                          color: Colors.orange.shade800,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _audioPlayerService.togglePlaylistMode();
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: TabBarView(
+                  // Playback controls
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
                       children: [
-                        NoiseTracksGrid(
-                          tracks: noiseTracks,
-                          onPlayPressed: (index) async {
-                            if (noiseTracks[index].isPlaying) {
-                              await _stopCurrentAudio();
-                            } else {
-                              await _stopCurrentAudio();
-                              await noiseTracks[index].play();
-                              noiseTracks[index].isPlaying = true;
-                            }
+                        PlaybackControlsWidget(
+                          audioPlayerService: _audioPlayerService,
+                          currentTrackTitle: _getCurrentTrackTitle(),
+                          onStopPressed: () async {
+                            await _stopCurrentAudio();
                             setState(() {});
                           },
-                          isPlaylistMode: _audioPlayerService.isPlaylistMode,
-                          onPlaylistToggle: _audioPlayerService.isPlaylistMode
-                              ? (index) =>
-                                  _togglePlaylistTrack(noiseTracks[index])
-                              : null,
-                        ),
-                        LullabyTracksGrid(
-                          tracks: lullabyTracks,
-                          onPlayPressed: (index) async {
-                            if (lullabyTracks[index].isPlaying) {
-                              await _stopCurrentAudio();
-                            } else {
-                              await _stopCurrentAudio();
-                              await lullabyTracks[index].play();
-                              lullabyTracks[index].isPlaying = true;
-                            }
+                          onPlayPressed: () async {
+                            await _playPlaylist();
                             setState(() {});
                           },
+                          onPreviousPressed: _previousTrack,
+                          onNextPressed: _nextTrack,
+                          isPlaylistLooping: isPlaylistLooping,
                           isPlaylistMode: _audioPlayerService.isPlaylistMode,
-                          onPlaylistToggle: _audioPlayerService.isPlaylistMode
-                              ? (index) =>
-                                  _togglePlaylistTrack(lullabyTracks[index])
-                              : null,
-                        ),
-                        SongTracksGrid(
-                          tracks: songTracks,
-                          onPlayPressed: (index) async {
-                            if (songTracks[index].isPlaying) {
-                              await _stopCurrentAudio();
-                            } else {
-                              await _stopCurrentAudio();
-                              await songTracks[index].play();
-                              songTracks[index].isPlaying = true;
-                            }
-                            setState(() {});
+                          isPlaylistVisible: isPlaylistVisible,
+                          onLoopChanged: (_) => _togglePlaylistLoop(),
+                          onPlaylistModeChanged: (_) {
+                            setState(() {
+                              _audioPlayerService.togglePlaylistMode();
+                            });
                           },
-                          isPlaylistMode: _audioPlayerService.isPlaylistMode,
-                          onPlaylistToggle: _audioPlayerService.isPlaylistMode
-                              ? (index) =>
-                                  _togglePlaylistTrack(songTracks[index])
-                              : null,
-                        ),
-                        PlaylistTracksGrid(
-                          tracks: playlistTracks,
-                          onPlayPressed: _playPlaylist,
-                          onRemoveFromPlaylist: _removeFromPlaylist,
-                          isLooping: isPlaylistLooping,
-                          onLoopToggle: _togglePlaylistLoop,
+                          onPlaylistVisibilityChanged: (value) {
+                            setState(() {
+                              isPlaylistVisible = value;
+                            });
+                          },
                         ),
                       ],
                     ),
                   ),
+                  if (!isPlaylistVisible) ...[
+                    TabBar(
+                      indicatorColor: Colors.orange.shade800,
+                      labelColor: Colors.orange.shade800,
+                      unselectedLabelColor: Colors.grey,
+                      tabs: [
+                        Tab(
+                          icon:
+                              Image.asset('assets/images/noise.png', width: 24),
+                          text: 'Noise',
+                        ),
+                        Tab(
+                          icon: Image.asset('assets/images/lullaby.png',
+                              width: 24),
+                          text: 'Lullaby',
+                        ),
+                        Tab(
+                          icon:
+                              Image.asset('assets/images/songs.png', width: 24),
+                          text: 'Songs',
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          NoiseTracksGrid(
+                            tracks: noiseTracks,
+                            onPlayPressed: (index) async {
+                              if (noiseTracks[index].isPlaying) {
+                                await _stopCurrentAudio();
+                              } else {
+                                await _stopCurrentAudio();
+                                await noiseTracks[index].play();
+                                noiseTracks[index].isPlaying = true;
+                              }
+                              setState(() {});
+                            },
+                            isPlaylistMode: _audioPlayerService.isPlaylistMode,
+                            onPlaylistToggle: _audioPlayerService.isPlaylistMode
+                                ? (index) =>
+                                    _togglePlaylistTrack(noiseTracks[index])
+                                : null,
+                          ),
+                          LullabyTracksGrid(
+                            tracks: lullabyTracks,
+                            onPlayPressed: (index) async {
+                              if (lullabyTracks[index].isPlaying) {
+                                await _stopCurrentAudio();
+                              } else {
+                                await _stopCurrentAudio();
+                                await lullabyTracks[index].play();
+                                lullabyTracks[index].isPlaying = true;
+                              }
+                              setState(() {});
+                            },
+                            isPlaylistMode: _audioPlayerService.isPlaylistMode,
+                            onPlaylistToggle: _audioPlayerService.isPlaylistMode
+                                ? (index) =>
+                                    _togglePlaylistTrack(lullabyTracks[index])
+                                : null,
+                          ),
+                          SongTracksGrid(
+                            tracks: songTracks,
+                            onPlayPressed: (index) async {
+                              if (songTracks[index].isPlaying) {
+                                await _stopCurrentAudio();
+                              } else {
+                                await _stopCurrentAudio();
+                                await songTracks[index].play();
+                                songTracks[index].isPlaying = true;
+                              }
+                              setState(() {});
+                            },
+                            isPlaylistMode: _audioPlayerService.isPlaylistMode,
+                            onPlaylistToggle: _audioPlayerService.isPlaylistMode
+                                ? (index) =>
+                                    _togglePlaylistTrack(songTracks[index])
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ] else
+                    Expanded(
+                      child: PlaylistTracksGrid(
+                        tracks: playlistTracks,
+                        onRemoveFromPlaylist: _removeFromPlaylist,
+                      ),
+                    ),
                 ],
               ),
             ),
