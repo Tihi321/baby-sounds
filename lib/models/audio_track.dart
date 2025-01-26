@@ -9,6 +9,7 @@ class AudioTrack {
   final AudioPlayerService audioService;
   bool isLooping = false;
   bool isPlaying = false;
+  bool isInPlaylist = false;
   late final MediaItem mediaItem;
 
   AudioTrack({

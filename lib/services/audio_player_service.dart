@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import '../models/audio_track.dart';
 
 class AudioPlayerService {
   late final AudioPlayer _audioPlayer;
   final _playlist = ConcatenatingAudioSource(children: []);
   bool _isInitialized = false;
+  bool _isPlaylistMode = false;
 
   AudioPlayerService() {
     _audioPlayer = AudioPlayer();
@@ -25,6 +27,12 @@ class AudioPlayerService {
       debugPrint('Error initializing audio player: $e');
       debugPrint('Stack trace: $st');
     }
+  }
+
+  bool get isPlaylistMode => _isPlaylistMode;
+
+  void togglePlaylistMode() {
+    _isPlaylistMode = !_isPlaylistMode;
   }
 
   Future<void> loadAndPlayAsset(String assetPath, MediaItem mediaItem) async {
@@ -52,6 +60,36 @@ class AudioPlayerService {
       debugPrint('Asset loaded and playing');
     } catch (e, st) {
       debugPrint('Error loading asset: $e');
+      debugPrint('Stack trace: $st');
+      rethrow;
+    }
+  }
+
+  Future<void> loadPlaylist(List<AudioTrack> tracks,
+      {bool loop = false}) async {
+    try {
+      debugPrint('Loading playlist with ${tracks.length} tracks');
+      await _playlist.clear();
+
+      for (var track in tracks) {
+        await _playlist.add(
+          AudioSource.asset(
+            track.assetPath,
+            tag: track.mediaItem,
+          ),
+        );
+      }
+
+      if (!_isInitialized) {
+        await _initializePlayer();
+      }
+
+      await _audioPlayer.setLoopMode(loop ? LoopMode.all : LoopMode.off);
+      await _audioPlayer.seek(Duration.zero, index: 0);
+      await _audioPlayer.play();
+      debugPrint('Playlist loaded and playing');
+    } catch (e, st) {
+      debugPrint('Error loading playlist: $e');
       debugPrint('Stack trace: $st');
       rethrow;
     }

@@ -6,12 +6,16 @@ class BaseAudioTracksGrid extends StatelessWidget {
   final List<AudioTrack> tracks;
   final Function(int index) onPlayPressed;
   final String imagePath;
+  final bool isPlaylistMode;
+  final Function(int index)? onPlaylistToggle;
 
   const BaseAudioTracksGrid({
     super.key,
     required this.tracks,
     required this.onPlayPressed,
     required this.imagePath,
+    this.isPlaylistMode = false,
+    this.onPlaylistToggle,
   });
 
   @override
@@ -31,6 +35,10 @@ class BaseAudioTracksGrid extends StatelessWidget {
             track: tracks[index],
             imagePath: imagePath,
             onPlayPressed: () => onPlayPressed(index),
+            isPlaylistMode: isPlaylistMode,
+            onPlaylistToggle: onPlaylistToggle != null
+                ? () => onPlaylistToggle!(index)
+                : null,
           );
         },
       ),

@@ -6,6 +6,7 @@ import '../widgets/sound_title.dart';
 import '../widgets/noise_tracks_grid.dart';
 import '../widgets/lullaby_tracks_grid.dart';
 import '../widgets/song_tracks_grid.dart';
+import '../widgets/playlist_tracks_grid.dart';
 
 class SoundListScreen extends StatefulWidget {
   const SoundListScreen({super.key});
@@ -19,6 +20,8 @@ class _SoundListScreenState extends State<SoundListScreen> {
   late final List<AudioTrack> noiseTracks;
   late final List<AudioTrack> lullabyTracks;
   late final List<AudioTrack> songTracks;
+  final List<AudioTrack> playlistTracks = [];
+  bool isPlaylistLooping = false;
 
   @override
   void initState() {
@@ -131,10 +134,52 @@ class _SoundListScreenState extends State<SoundListScreen> {
     }
   }
 
+  void _togglePlaylistTrack(AudioTrack track) {
+    setState(() {
+      if (track.isInPlaylist) {
+        track.isInPlaylist = false;
+        playlistTracks.remove(track);
+      } else {
+        track.isInPlaylist = true;
+        playlistTracks.add(track);
+      }
+    });
+  }
+
+  void _removeFromPlaylist(int index) {
+    setState(() {
+      playlistTracks[index].isInPlaylist = false;
+      playlistTracks.removeAt(index);
+    });
+  }
+
+  void _togglePlaylistLoop() {
+    setState(() {
+      isPlaylistLooping = !isPlaylistLooping;
+    });
+  }
+
+  Future<void> _playPlaylist(int startIndex) async {
+    if (playlistTracks.isEmpty) return;
+
+    await _stopCurrentAudio();
+    await _audioPlayerService.loadPlaylist(
+      playlistTracks.sublist(startIndex)
+        ..addAll(playlistTracks.sublist(0, startIndex)),
+      loop: isPlaylistLooping,
+    );
+    setState(() {
+      for (var track in [...noiseTracks, ...lullabyTracks, ...songTracks]) {
+        track.isPlaying = false;
+      }
+      playlistTracks[startIndex].isPlaying = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         body: GradientBackground(
           child: SafeArea(
@@ -149,23 +194,48 @@ class _SoundListScreenState extends State<SoundListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SoundTitle(),
-                  TabBar(
-                    indicatorColor: Colors.orange.shade800,
-                    labelColor: Colors.orange.shade800,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: [
-                      Tab(
-                        icon: Image.asset('assets/images/noise.png', width: 24),
-                        text: 'Noise',
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TabBar(
+                          indicatorColor: Colors.orange.shade800,
+                          labelColor: Colors.orange.shade800,
+                          unselectedLabelColor: Colors.grey,
+                          tabs: [
+                            Tab(
+                              icon: Image.asset('assets/images/noise.png',
+                                  width: 24),
+                              text: 'Noise',
+                            ),
+                            Tab(
+                              icon: Image.asset('assets/images/lullaby.png',
+                                  width: 24),
+                              text: 'Lullaby',
+                            ),
+                            Tab(
+                              icon: Image.asset('assets/images/songs.png',
+                                  width: 24),
+                              text: 'Songs',
+                            ),
+                            const Tab(
+                              icon: Icon(Icons.playlist_play),
+                              text: 'Playlist',
+                            ),
+                          ],
+                        ),
                       ),
-                      Tab(
-                        icon:
-                            Image.asset('assets/images/lullaby.png', width: 24),
-                        text: 'Lullaby',
-                      ),
-                      Tab(
-                        icon: Image.asset('assets/images/songs.png', width: 24),
-                        text: 'Songs',
+                      IconButton(
+                        icon: Icon(
+                          _audioPlayerService.isPlaylistMode
+                              ? Icons.playlist_play
+                              : Icons.music_note,
+                          color: Colors.orange.shade800,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _audioPlayerService.togglePlaylistMode();
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -184,6 +254,11 @@ class _SoundListScreenState extends State<SoundListScreen> {
                             }
                             setState(() {});
                           },
+                          isPlaylistMode: _audioPlayerService.isPlaylistMode,
+                          onPlaylistToggle: _audioPlayerService.isPlaylistMode
+                              ? (index) =>
+                                  _togglePlaylistTrack(noiseTracks[index])
+                              : null,
                         ),
                         LullabyTracksGrid(
                           tracks: lullabyTracks,
@@ -197,6 +272,11 @@ class _SoundListScreenState extends State<SoundListScreen> {
                             }
                             setState(() {});
                           },
+                          isPlaylistMode: _audioPlayerService.isPlaylistMode,
+                          onPlaylistToggle: _audioPlayerService.isPlaylistMode
+                              ? (index) =>
+                                  _togglePlaylistTrack(lullabyTracks[index])
+                              : null,
                         ),
                         SongTracksGrid(
                           tracks: songTracks,
@@ -210,6 +290,18 @@ class _SoundListScreenState extends State<SoundListScreen> {
                             }
                             setState(() {});
                           },
+                          isPlaylistMode: _audioPlayerService.isPlaylistMode,
+                          onPlaylistToggle: _audioPlayerService.isPlaylistMode
+                              ? (index) =>
+                                  _togglePlaylistTrack(songTracks[index])
+                              : null,
+                        ),
+                        PlaylistTracksGrid(
+                          tracks: playlistTracks,
+                          onPlayPressed: _playPlaylist,
+                          onRemoveFromPlaylist: _removeFromPlaylist,
+                          isLooping: isPlaylistLooping,
+                          onLoopToggle: _togglePlaylistLoop,
                         ),
                       ],
                     ),

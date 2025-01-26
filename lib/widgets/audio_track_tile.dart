@@ -5,12 +5,16 @@ class AudioTrackTile extends StatefulWidget {
   final AudioTrack track;
   final VoidCallback onPlayPressed;
   final String imagePath;
+  final bool isPlaylistMode;
+  final VoidCallback? onPlaylistToggle;
 
   const AudioTrackTile({
     super.key,
     required this.track,
     required this.imagePath,
     required this.onPlayPressed,
+    this.isPlaylistMode = false,
+    this.onPlaylistToggle,
   });
 
   @override
@@ -91,34 +95,60 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: () {
-                      setState(() {
-                        widget.track.toggleLoop();
-                      });
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Icon(
-                        widget.track.isLooping
-                            ? Icons.repeat_one
-                            : Icons.repeat,
-                        color: widget.track.isLooping
-                            ? Colors.orange
-                            : Colors.orange.shade300,
-                        size: 24,
+                if (!widget.isPlaylistMode)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () {
+                        setState(() {
+                          widget.track.toggleLoop();
+                        });
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          widget.track.isLooping
+                              ? Icons.repeat_one
+                              : Icons.repeat,
+                          color: widget.track.isLooping
+                              ? Colors.orange
+                              : Colors.orange.shade300,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                if (widget.isPlaylistMode && widget.onPlaylistToggle != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: widget.onPlaylistToggle,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          widget.track.isInPlaylist
+                              ? Icons.playlist_remove
+                              : Icons.playlist_add,
+                          color: widget.track.isInPlaylist
+                              ? Colors.orange
+                              : Colors.orange.shade300,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
