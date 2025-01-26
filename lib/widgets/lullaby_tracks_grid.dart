@@ -1,37 +1,9 @@
-import 'package:flutter/material.dart';
-import '../models/audio_track.dart';
-import '../widgets/audio_track_tile.dart';
+import 'base_audio_tracks_grid.dart';
 
-class LullabyTracksGrid extends StatelessWidget {
-  final List<AudioTrack> tracks;
-  final Function(int index) onPlayPressed;
-
+class LullabyTracksGrid extends BaseAudioTracksGrid {
   const LullabyTracksGrid({
     super.key,
-    required this.tracks,
-    required this.onPlayPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.85,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        itemCount: tracks.length,
-        itemBuilder: (context, index) {
-          return AudioTrackTile(
-            track: tracks[index],
-            imagePath: 'assets/images/lullaby.png',
-            onPlayPressed: () => onPlayPressed(index),
-          );
-        },
-      ),
-    );
-  }
+    required super.tracks,
+    required super.onPlayPressed,
+  }) : super(imagePath: 'assets/images/lullaby.png');
 }

@@ -31,8 +31,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  just_audio: any # substitute version number
-  just_audio_background: any # substitute version number
+  just_audio: ^0.9.36
+  just_audio_background: ^0.0.1-beta.11
   flutter_launcher_icons: ^0.14.3
   cupertino_icons: ^1.0.2
 
@@ -49,8 +49,13 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    # Songs
+    - assets/audio/pjesme/
+    # Lullaby
     - assets/audio/lullaby/
+    # Noise
     - assets/audio/noise/
+    # Other assets
     - assets/images/
     - assets/icons/
     - assets/app/
