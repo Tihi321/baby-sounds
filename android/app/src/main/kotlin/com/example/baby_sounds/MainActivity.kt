@@ -1,4 +1,4 @@
-package com.example.baby_sounds
+package com.tihomirselak.baby_sounds
 
 import io.flutter.embedding.android.FlutterActivity
 import com.ryanheise.audioservice.AudioServiceActivity

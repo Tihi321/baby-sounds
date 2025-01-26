@@ -18,7 +18,7 @@ class AudioTrack {
     mediaItem = MediaItem(
       id: assetPath,
       title: title,
-      artUri: Uri.parse('asset:///assets/audio_icon.png'),
+      artUri: Uri.parse('asset:///assets/icons/audio_icon.png'),
     );
   }
 

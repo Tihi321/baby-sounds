@@ -4,10 +4,12 @@ import '../models/audio_track.dart';
 class AudioTrackTile extends StatefulWidget {
   final AudioTrack track;
   final VoidCallback onPlayPressed;
+  final String imagePath;
 
   const AudioTrackTile({
     super.key,
     required this.track,
+    required this.imagePath,
     required this.onPlayPressed,
   });
 
@@ -20,11 +22,8 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
 
   @override
   Widget build(BuildContext context) {
-    String imagePath = widget.track.title == 'White Noise'
-        ? 'assets/images/noise.png'
-        : 'assets/images/waves.png';
-
     return GestureDetector(
+      onTap: widget.onPlayPressed,
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),
@@ -52,9 +51,24 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
                   flex: 3,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Image.asset(
-                      imagePath,
-                      fit: BoxFit.contain,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.asset(
+                          widget.imagePath,
+                          fit: BoxFit.contain,
+                        ),
+                        if (widget.track.isPlaying)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child:
+                                Icon(Icons.stop, color: Colors.white, size: 32),
+                          ),
+                      ],
                     ),
                   ),
                 ),
@@ -69,47 +83,32 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          widget.track.isLooping
-                              ? Icons.repeat_one
-                              : Icons.repeat,
-                          color: widget.track.isLooping
-                              ? Colors.orange
-                              : Colors.orange.shade300,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            widget.track.toggleLoop();
-                          });
-                        },
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () {
+                      setState(() {
+                        widget.track.toggleLoop();
+                      });
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.orange.shade100,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            icon: Icon(
-                              widget.track.isPlaying
-                                  ? Icons.stop
-                                  : Icons.play_arrow,
-                              size: 32,
-                              color: Colors.orange.shade800,
-                            ),
-                            onPressed: widget.onPlayPressed,
-                          ),
-                        ),
+                      child: Icon(
+                        widget.track.isLooping
+                            ? Icons.repeat_one
+                            : Icons.repeat,
+                        color: widget.track.isLooping
+                            ? Colors.orange
+                            : Colors.orange.shade300,
+                        size: 24,
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
