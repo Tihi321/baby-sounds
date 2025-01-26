@@ -39,8 +39,9 @@ flutter pub get
 2. Run the app
 
 ```bash
+flutter emulators
 # Start an emulator or connect a physical device
-flutter emulators --launch Pixel_9_API_35  # Or your preferred emulator
+flutter emulators --launch Pixel_9_API_35_B  # Or your preferred emulator
 flutter run
 ```
 
@@ -49,10 +50,8 @@ flutter run
 To run the app in development/emulator mode:
 
 ```bash
-flutter run --dart-define=FORCE_EMULATOR=true
-flutter run -d emulator-5554 --dart-define=FORCE_EMULATOR=true
-flutter run -d emulator-5556 --dart-define=SERVER_ADDRESS=192.168.178.79
-flutter run -d emulator-5556 | findstr /v "MESA"
+flutter devices
+flutter run -d emulator-5554
 ```
 
 ## Building

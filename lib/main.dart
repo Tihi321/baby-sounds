@@ -4,7 +4,7 @@ import 'screens/sound_list_screen.dart';
 
 Future<void> main() async {
   await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.example.baby_sounds.channel.audio',
+    androidNotificationChannelId: 'com.tihomirselak.baby_sounds.channel.audio',
     androidNotificationChannelName: 'Baby Sounds',
     androidNotificationOngoing: true,
   );

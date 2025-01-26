@@ -49,18 +49,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/audio_icon.png
-    - assets/audio/
-    - assets/audio/white-noise.mp3
-    - assets/audio/waves.mp3
+    - assets/audio/lullaby/
+    - assets/audio/noise/
     - assets/images/
-    - assets/images/noise.png
-    - assets/images/waves.png
-    - assets/images/sounds_app_icon.png
+    - assets/icons/
+    - assets/app/
 
 target_platforms:
   - android
-
-flutter_launcher_icons:
-  android: true
-  image_path: "assets/images/sounds_app_icon.png"
