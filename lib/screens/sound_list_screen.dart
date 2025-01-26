@@ -219,7 +219,7 @@ class _SoundListScreenState extends State<SoundListScreen> {
                   child: Container(
                     color: Theme.of(context)
                         .scaffoldBackgroundColor
-                        .withOpacity(0.95),
+                        .withOpacity(0.6),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24.0, vertical: 8.0),
                     child: PlaybackControlsWidget(
