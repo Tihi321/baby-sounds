@@ -36,7 +36,9 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
         transform: Matrix4.identity()..scale(_isPressed ? 0.95 : 1.0),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.orange.shade50,
+            color: widget.track.isPlaying
+                ? Colors.orange.shade200 // Playing color
+                : Colors.orange.shade50, // Default color
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -55,28 +57,13 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
                   flex: 3,
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        SizedBox(
-                          width: 80,
-                          height: 80,
-                          child: Image.asset(
-                            widget.imagePath,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        if (widget.track.isPlaying)
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            child:
-                                Icon(Icons.stop, color: Colors.white, size: 32),
-                          ),
-                      ],
+                    child: SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Image.asset(
+                        widget.imagePath,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -87,6 +74,8 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
                     child: Text(
                       widget.track.title,
                       textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1, // Changed from 2 to 1
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.normal,

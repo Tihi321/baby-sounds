@@ -103,15 +103,43 @@ class AudioPlayerService {
     }
   }
 
+  Future<void> setAudioSource(AudioSource source) async {
+    try {
+      await _playlist.clear();
+      await _playlist.add(source);
+      if (!_isInitialized) {
+        await _initializePlayer();
+      }
+      await _audioPlayer.seek(Duration.zero, index: 0);
+      debugPrint('Audio source set successfully');
+    } catch (e, st) {
+      debugPrint('Error setting audio source: $e');
+      debugPrint('Stack trace: $st');
+      rethrow;
+    }
+  }
+
   void setupPlayerListener(void Function(bool isPlaying) callback) {
-    _audioPlayer.playerStateStream.listen((playerState) {
-      callback(playerState.playing);
-    });
+    _audioPlayer.playerStateStream.listen(
+      (playerState) {
+        try {
+          callback(playerState.playing);
+        } catch (e) {
+          debugPrint('Error in player state callback: $e');
+        }
+      },
+      onError: (Object e, StackTrace st) {
+        debugPrint('Error in player state stream: $e');
+        debugPrint('Stack trace: $st');
+      },
+    );
 
     _audioPlayer.playbackEventStream.listen(
-      (event) {},
+      (event) {
+        // Handle playback events if needed
+      },
       onError: (Object e, StackTrace st) {
-        debugPrint('A stream error occurred: $e');
+        debugPrint('Error in playback event stream: $e');
         debugPrint('Stack trace: $st');
       },
     );
@@ -125,6 +153,22 @@ class AudioPlayerService {
       debugPrint('Error stopping audio player: $e');
       debugPrint('Stack trace: $st');
     }
+  }
+
+  Future<void> setVolume(double volume) async {
+    // Clamp volume between 0.0 and 1.0
+    final normalizedVolume = volume.clamp(0.0, 1.0);
+    try {
+      await audioPlayer.setVolume(normalizedVolume);
+    } catch (e) {
+      debugPrint('Error setting volume: $e');
+      // Set a safe default volume if there's an error
+      await audioPlayer.setVolume(1.0);
+    }
+  }
+
+  double getVolume() {
+    return audioPlayer.volume.clamp(0.0, 1.0);
   }
 
   void dispose() {

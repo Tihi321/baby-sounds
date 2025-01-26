@@ -34,40 +34,44 @@ class PlaybackControlsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if (currentTrackTitle != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Text(
-              'Now Playing: $currentTrackTitle',
-              style: TextStyle(
-                color: Colors.orange.shade800,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
         StreamBuilder<Duration?>(
           stream: audioPlayerService.audioPlayer.positionStream,
           builder: (context, snapshot) {
             final position = snapshot.data ?? Duration.zero;
             final duration =
                 audioPlayerService.audioPlayer.duration ?? Duration.zero;
+
             return Column(
               children: [
-                if (duration.inMilliseconds > 0)
-                  Slider(
-                    value: position.inMilliseconds
-                        .clamp(0, duration.inMilliseconds)
-                        .toDouble(),
-                    min: 0,
-                    max: duration.inMilliseconds.toDouble(),
-                    activeColor: Colors.orange.shade800,
-                    onChanged: (value) {
-                      audioPlayerService.audioPlayer.seek(
-                        Duration(milliseconds: value.toInt()),
-                      );
-                    },
+                Slider(
+                  value: position.inMilliseconds.toDouble(),
+                  min: 0,
+                  max: duration.inMilliseconds > 0
+                      ? duration.inMilliseconds.toDouble()
+                      : 1,
+                  activeColor: Colors.orange.shade800,
+                  inactiveColor: Colors.orange.shade100,
+                  onChanged: audioPlayerService.audioPlayer.playing
+                      ? (value) {
+                          audioPlayerService.audioPlayer.seek(
+                            Duration(milliseconds: value.toInt()),
+                          );
+                        }
+                      : null,
+                ),
+                if (currentTrackTitle != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      currentTrackTitle!,
+                      style: TextStyle(
+                        color: Colors.orange.shade800,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
