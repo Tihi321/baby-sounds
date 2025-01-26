@@ -50,13 +50,17 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
                 Expanded(
                   flex: 3,
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(12.0),
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        Image.asset(
-                          widget.imagePath,
-                          fit: BoxFit.contain,
+                        SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: Image.asset(
+                            widget.imagePath,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         if (widget.track.isPlaying)
                           Container(
@@ -73,13 +77,17 @@ class _AudioTrackTileState extends State<AudioTrackTile> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    widget.track.title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange.shade800,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Center(
+                    child: Text(
+                      widget.track.title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.orange.shade800,
+                      ),
                     ),
                   ),
                 ),
