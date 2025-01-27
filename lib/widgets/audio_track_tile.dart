@@ -22,22 +22,18 @@ class AudioTrackTile extends StatefulWidget {
 }
 
 class _AudioTrackTileState extends State<AudioTrackTile> {
-  bool _isPressed = false;
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onPlayPressed,
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
-      child: AnimatedContainer(
+      child: AnimatedScale(
         duration: const Duration(milliseconds: 150),
-        transform: Matrix4.identity()..scale(_isPressed ? 0.95 : 1.0),
-        child: Container(
+        scale: widget.track.isLoading ? 0.95 : 1.0,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
           decoration: BoxDecoration(
-            color: widget.track.isPlaying
-                ? Colors.orange.shade200 // Playing color
+            color: widget.track.isPlaying || widget.track.isLoading
+                ? Colors.orange.shade200 // Playing/Loading color
                 : Colors.orange.shade50, // Default color
             borderRadius: BorderRadius.circular(20),
             boxShadow: [

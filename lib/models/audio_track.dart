@@ -26,17 +26,11 @@ class AudioTrack {
 
   Future<void> play() async {
     try {
-      isLoading = true;
-      isPlaying = true; // Set playing state before starting playback
-      await audioService.setAudioSource(
-        AudioSource.asset(assetPath, tag: mediaItem),
-      );
-      await audioService.audioPlayer.play();
+      await audioService.loadAndPlayAsset(assetPath, mediaItem);
+      // Note: isPlaying will be set by the player state listener in SoundListScreen
     } catch (e) {
       debugPrint('Error playing track: $e');
-      isPlaying = false;
-    } finally {
-      isLoading = false;
+      rethrow; // Rethrow to let caller handle loading state
     }
   }
 

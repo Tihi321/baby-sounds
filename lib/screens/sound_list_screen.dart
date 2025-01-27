@@ -267,20 +267,27 @@ class _SoundListScreenState extends State<SoundListScreen> {
           if (track.isPlaying) {
             await _stopCurrentAudio();
           } else {
-            // Set states before playing to avoid blank frame
-            setState(() {
-              for (var t in [...noiseTracks, ...lullabyTracks, ...songTracks]) {
-                t.isPlaying = false;
-              }
-              track.isPlaying = true;
+            // First stop any currently playing audio
+            await _stopCurrentAudio();
+
+            if (!mounted) return;
+
+            // Schedule state changes using Future.microtask to avoid frame scheduling issues
+            await Future.microtask(() {
+              if (!mounted) return;
+              setState(() {
+                track.isLoading = true;
+              });
             });
 
-            await track.play();
-
-            if (mounted && !track.isPlaying) {
-              // Only update state if play failed
-              setState(() {
-                track.isPlaying = false;
+            try {
+              await track.play();
+            } finally {
+              await Future.microtask(() {
+                if (!mounted) return;
+                setState(() {
+                  track.isLoading = false;
+                });
               });
             }
           }
