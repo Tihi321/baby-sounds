@@ -9,6 +9,8 @@ class AudioTrack {
   final AudioPlayerService audioService;
   bool isLooping = false;
   bool isPlaying = false;
+  bool isInPlaylist = false;
+  bool isLoading = false; // Add this line
   late final MediaItem mediaItem;
 
   AudioTrack({
@@ -24,20 +26,11 @@ class AudioTrack {
 
   Future<void> play() async {
     try {
-      debugPrint('Starting playback for: $assetPath');
-
-      // Set loop mode
-      await audioService.audioPlayer
-          .setLoopMode(isLooping ? LoopMode.one : LoopMode.off);
-      debugPrint('Loop mode set');
-
-      // Load and play the asset
       await audioService.loadAndPlayAsset(assetPath, mediaItem);
-      debugPrint('Playback started');
-    } catch (e, stackTrace) {
-      debugPrint('Error playing audio: $e');
-      debugPrint('Stack trace: $stackTrace');
-      rethrow;
+      // Note: isPlaying will be set by the player state listener in SoundListScreen
+    } catch (e) {
+      debugPrint('Error playing track: $e');
+      rethrow; // Rethrow to let caller handle loading state
     }
   }
 

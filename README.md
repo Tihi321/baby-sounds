@@ -1,24 +1,53 @@
-# baby-sounds
+# Baby Sounds
 
-A Flutter application for playing soothing background sounds for babies. The app features continuous playback capability even when the screen is off or other apps are in focus, making it perfect for naptime and bedtime routines.
+A Flutter mobile application designed to soothe and calm babies through a curated collection of lullabies, white noise, and children's songs. Perfect for naptime, bedtime routines, and creating a peaceful environment for your little one.
 
-## Features
+## Overview
 
-- 🎵 Background audio playback
-- 📱 Cross-platform support (iOS & Android)
+Baby Sounds is a thoughtfully crafted mobile app designed to help parents create a calming and soothing atmosphere for their babies. Understanding that consistent, gentle sounds can significantly improve sleep quality and reduce stress in infants, our app offers a carefully curated selection of audio content. From classical lullabies that have soothed generations of babies to scientifically-designed white noise that mimics womb sounds, each audio track is specifically chosen for its calming properties.
+
+The app features continuous playback capability even when the screen is off or other apps are in focus, making it perfect for naptime and bedtime routines. Parents can easily create customized playlists combining different types of sounds - perhaps starting with gentle children's songs during the wind-down routine, transitioning to a calming lullaby, and finally maintaining peaceful white noise throughout the night. This flexibility helps establish consistent sleep routines, which sleep experts recognize as crucial for healthy infant development.
+
+What sets Baby Sounds apart is its focus on both functionality and simplicity. While packed with features like background playback and playlist management, the interface remains intuitive enough to operate even during those challenging middle-of-the-night moments. The app is optimized for battery efficiency during long playback sessions, ensuring it can reliably run throughout naps and nighttime sleep without draining your device.
+
+## Available Sounds
+
+### 🎵 Lullabies
+
+- Calm and Focused Lullaby
+- Mozart-Brahms Lullaby Collection
+- Soothing Classical Arrangements
+
+### 🌊 White Noise
+
+- Gentle Ocean Waves
+- Soothing White Noise
+
+### 🎼 Children's Songs
+
+- Collection of gentle and calming children's music
+- Carefully selected songs for young listeners
+- Multi-language song options
+
+## Key Features
+
+- 🎵 Background audio playback - continues playing when using other apps
+- 💤 Screen-off playback support - perfect for sleeping time
 - 🔄 Loop functionality for continuous play
-- 🎚️ Multiple sound options
-- 💡 Screen-off playback support
+- 📱 Cross-platform support (iOS & Android)
+- 🎚️ Simple, intuitive controls
 - 🔊 High-quality audio files
 
-## Prerequisites
+## Technical Details
+
+### Prerequisites
 
 - Flutter SDK (2.0.0 or higher)
 - Dart SDK (2.12.0 or higher)
 - Android Studio / VS Code
 - Physical Android/iOS devices or emulator for testing
 
-## Dependencies
+### Dependencies
 
 ```yaml
 dependencies:
@@ -28,65 +57,38 @@ dependencies:
   just_audio_background: ^0.0.1
 ```
 
-## Installation
+### Installation
 
-1. Install dependencies
+1. Install dependencies:
 
 ```bash
 flutter pub get
 ```
 
-2. Run the app
+2. Run the app:
 
 ```bash
-flutter emulators
-# Start an emulator or connect a physical device
-flutter emulators --launch Pixel_9_API_35_B  # Or your preferred emulator
 flutter run
 ```
 
-## Development Mode
+### Building
 
-To run the app in development/emulator mode:
-
-```bash
-flutter devices
-flutter run -d emulator-5554
-```
-
-## Building
-
-### Debug Build
+For Android:
 
 ```bash
-flutter build apk --debug
-```
-
-### Release Build
-
-```bash
-# For Android
+dart run flutter_launcher_icons
 flutter build apk --release
+```
 
-# For iOS
+For iOS:
+
+```bash
 flutter build ios --release
 ```
 
-### Clean Build
+The release APK can be found at:
 
-```bash
-flutter clean
-flutter pub get
-flutter build apk --release
 ```
-
-## Build Output Location
-
-### APK Location
-
-After running `flutter build apk`, the APK file is located at:
-
-```bash
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
@@ -94,20 +96,25 @@ build/app/outputs/flutter-apk/app-release.apk
 
 ```
 lib/
-├── main.dart           # App entry point with audio player implementation
+├── main.dart                    # App entry point
+├── models/                      # Data models
+├── screens/                     # App screens
+├── services/                    # Audio player service
+├── widgets/                     # UI components
 └── assets/
-    └── audio/         # Sound files directory
-        ├── waves.mp3
-        └── white-noise.mp3
+    └── audio/                  # Sound files
+        ├── lullaby/            # Lullaby tracks
+        ├── noise/              # White noise sounds
+        └── pjesme/             # Children's songs
 ```
 
 ## Features in Detail
 
-- **Background Playback**: Continue playing sounds even when the app is in the background
-- **Loop Control**: Toggle looping for continuous playback
-- **Simple Interface**: Easy-to-use controls for play/stop and loop functionality
-- **Multiple Sounds**: Choose from different soothing sounds
-- **Battery Efficient**: Optimized for long-running background playback
+- **Smart Background Playback**: Continues playing even when the app is in the background or screen is locked
+- **Battery Optimization**: Efficient background playback for extended use
+- **Customizable Experience**: Choose from various sound categories
+- **Simple Interface**: Easy-to-use controls for all functions
+- **Playlist Support**: Create custom playlists of favorite sounds
 
 ## License
 

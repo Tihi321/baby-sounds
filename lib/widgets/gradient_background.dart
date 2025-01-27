@@ -10,18 +10,27 @@ class GradientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.orange.shade200,
-            Colors.orange.shade50,
-          ],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          'assets/images/clouds.png',
+          fit: BoxFit.cover,
         ),
-      ),
-      child: child,
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.orange.shade200.withOpacity(0.9),
+                Colors.orange.shade50.withOpacity(0.8),
+              ],
+            ),
+          ),
+        ),
+        child,
+      ],
     );
   }
 }
