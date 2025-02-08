@@ -10,7 +10,7 @@ class AudioTrack {
   bool isLooping = false;
   bool isPlaying = false;
   bool isInPlaylist = false;
-  bool isLoading = false; // Add this line
+  bool isLoading = false;
   late final MediaItem mediaItem;
 
   AudioTrack({
@@ -21,6 +21,8 @@ class AudioTrack {
     mediaItem = MediaItem(
       id: assetPath,
       title: title,
+      artUri: Uri.parse('asset:///assets/app/app_logo.png'),
+      artist: 'Baby Sounds',
     );
   }
 

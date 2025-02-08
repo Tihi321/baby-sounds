@@ -41,7 +41,7 @@ class _SoundListScreenState extends State<SoundListScreen> {
   }
 
   void _setupAudioPlayerListener() {
-    _audioPlayerService.setupPlayerListener((isPlaying) {
+    _audioPlayerService.initializePlayerListener((isPlaying) {
       if (!mounted) return;
       setState(() {
         for (var track in [...noiseTracks, ...lullabyTracks, ...songTracks]) {

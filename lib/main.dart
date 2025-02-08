@@ -7,6 +7,7 @@ Future<void> main() async {
     androidNotificationChannelId: 'com.tihomirselak.baby_sounds.channel.audio',
     androidNotificationChannelName: 'Baby Sounds',
     androidNotificationOngoing: true,
+    androidNotificationIcon: 'mipmap/ic_notification', // Add notification icon
   );
   runApp(const MyApp());
 }

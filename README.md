@@ -92,6 +92,27 @@ The release APK can be found at:
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
+```
+flutter emulators
+# Start an emulator or connect a physical device
+flutter emulators --launch Pixel_9_API_35_B  # Or your preferred emulator
+```
+
+```
+flutter devices
+flutter run -d emulator-5554
+```
+
+## Building
+
+### Debug Build
+
+```bash
+flutter build apk --debug
+```
+
+### Release Build
+
 ## Project Structure
 
 ```
